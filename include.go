@@ -2,6 +2,8 @@ package opp
 
 import (
 	"fmt"
+	"io/ioutil"
+	"path/filepath"
 	"strings"
 )
 
@@ -17,8 +19,48 @@ func (p *Preprocessor) processInclude(directive string) (string, error) {
 	// Unescape the bizarre OPP escape sequences
 	filename = unescapeFilename(filename)
 	
-	// TODO: Actually read and process the file
-	return "", fmt.Errorf("file inclusion not yet implemented: %s", filename)
+	// Read the file
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		// Try relative to current file if we have that context
+		if p.currentFile != "" {
+			relPath := filepath.Join(filepath.Dir(p.currentFile), filename)
+			content, err = ioutil.ReadFile(relPath)
+		}
+		if err != nil {
+			return "", fmt.Errorf("cannot read file %s: %w", filename, err)
+		}
+	}
+	
+	// Determine the full path for the included file
+	fullPath := filename
+	if !filepath.IsAbs(filename) && p.currentFile != "" {
+		fullPath = filepath.Join(filepath.Dir(p.currentFile), filename)
+	}
+	
+	// Create a new preprocessor for the included file to avoid state pollution
+	// But share the macros and variables
+	includeProcessor := &Preprocessor{
+		macros:      p.macros,
+		variables:   p.variables,
+		random:      p.random,
+		lineNumber:  1,
+		braceCount:  p.braceCount,
+		closeBraces: p.closeBraces,
+		currentFile: fullPath,
+	}
+	
+	// Process the included file
+	result, err := includeProcessor.Process(string(content))
+	if err != nil {
+		return "", fmt.Errorf("error processing included file %s: %w", filename, err)
+	}
+	
+	// Update our brace counts from the included file
+	p.braceCount = includeProcessor.braceCount
+	p.closeBraces = includeProcessor.closeBraces
+	
+	return result, nil
 }
 
 // unescapeFilename reverses OPP's creative path escaping

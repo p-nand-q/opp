@@ -3,6 +3,7 @@ package opp
 
 import (
 	"fmt"
+	"io/ioutil"
 	"strings"
 )
 
@@ -14,6 +15,7 @@ type Preprocessor struct {
 	lineNumber  int
 	braceCount  int
 	closeBraces int
+	currentFile string
 }
 
 // Macro represents a macro definition
@@ -97,8 +99,13 @@ func (p *Preprocessor) Process(input string) (string, error) {
 
 // ProcessFile processes a file
 func (p *Preprocessor) ProcessFile(filename string) (string, error) {
-	// TODO: Implement file reading
-	return "", fmt.Errorf("file processing not implemented yet")
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return "", fmt.Errorf("cannot read file %s: %w", filename, err)
+	}
+	
+	p.currentFile = filename
+	return p.Process(string(content))
 }
 
 func (p *Preprocessor) initPredefinedMacros() {

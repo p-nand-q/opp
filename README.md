@@ -109,6 +109,8 @@ You can use OPP to include other sourcefiles in your code, by using the followin
 ##<<Filename>.
 ```
 
+**Important**: The `.` at the end is mandatory - it terminates the filename. This resolves the ambiguity between file inclusion (`##<filename.`) and other directives that might start with `##<`.
+
 Because filenames with dots are frequent, you can use the escape sequence `\.` to specify a single dot. Because filenames with `\` are frequent on certain OSs (OSsi?) you can use `..` to specify a single `\`. Because filenames with `..` are frequent on certain OSs, you can use `\\` to specify a single `..`. Because filenames with `\\` are not so frequent on the OS in question, but still possible, you can use `//` to specify a single `\\`, and if your code editor has syntax coloring, you get the rest of the line in comment color, without paying extra. Here is a sample filename in C (on Windows NT) and its equivalent on OPP. Judge for yourself which is more phon - er - fun.
 
 ```c
@@ -218,7 +220,6 @@ Alternatively, you can check out my other programming languages each of which pr
 ## Known Limitations
 
 The following features from the OPP specification are not yet implemented:
-- File inclusion (`##<filename>`)
 - Function-like macros with arguments (`#0`, `#1`, `##0..n`)
 - Nested macro expansion (`##,` escape sequence)
 - Stringize (`#"`) and charize (`#'`) operators

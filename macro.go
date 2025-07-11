@@ -32,6 +32,13 @@ func (p *Preprocessor) defineMacro(definition string) error {
 		name = nameAndArgs[:parenIdx]
 		isFunctionLike = true
 		// We don't need to parse parameter names since we use positional args (#0, #1, etc)
+	} else {
+		// Check if body contains unescaped argument references or varargs - if so, treat as function-like
+		// We need to check the original body BEFORE escape processing to distinguish ##,#0 from #0
+		originalBody := body
+		if hasUnescapedArgReferences(originalBody) {
+			isFunctionLike = true
+		}
 	}
 	
 	// Process ##,# escapes in the macro body
@@ -130,6 +137,24 @@ func (p *Preprocessor) processStringizeCharize(definition string, args []string)
 				i += 4 // Skip #'#N
 				continue
 			}
+		}
+		
+		// Check for varargs ##N..n
+		if i+6 <= len(definition) && definition[i:i+2] == "##" && 
+		   definition[i+2] >= '0' && definition[i+2] <= '9' &&
+		   definition[i+3:i+6] == "..n" {
+			startArg := int(definition[i+2] - '0')
+			
+			// Collect arguments from startArg onwards
+			var varargsResult []string
+			for j := startArg; j < len(args); j++ {
+				varargsResult = append(varargsResult, args[j])
+			}
+			
+			// Join with ", " (comma + space)
+			result += strings.Join(varargsResult, ", ")
+			i += 6 // Skip ##N..n
+			continue
 		}
 		
 		// Check for regular argument substitution #N
@@ -335,18 +360,26 @@ func (p *Preprocessor) expandPredefinedMacro(line string) (string, error) {
 	}
 }
 
-// expandFunctionMacro handles macro calls with arguments
-func (p *Preprocessor) expandFunctionMacro(name string, args []string, definition string) string {
-	result := definition
-	
-	// Replace #n with corresponding arguments
-	for i, arg := range args {
-		placeholder := fmt.Sprintf("#%d", i)
-		result = strings.ReplaceAll(result, placeholder, arg)
+// hasUnescapedArgReferences checks if the body contains unescaped argument references or varargs
+func hasUnescapedArgReferences(body string) bool {
+	// Look for varargs patterns ##N..n
+	if strings.Contains(body, "..n") {
+		return true
 	}
 	
-	// Handle varargs ##n..n
-	// TODO: Implement varargs support
+	// Look for argument references #N (but not ##,#N which are escaped)
+	for i := 0; i < len(body)-1; i++ {
+		if body[i] == '#' && body[i+1] >= '0' && body[i+1] <= '9' {
+			// Found #N - check if it's escaped (preceded by ##,)
+			if i >= 3 && body[i-3:i] == "##," {
+				// This is ##,#N - escaped, don't count it
+				continue
+			}
+			// This is an unescaped #N
+			return true
+		}
+	}
 	
-	return result
+	return false
 }
+

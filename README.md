@@ -140,13 +140,22 @@ Everything after the single blank is treated as part of the macro body. Macro ar
 
 Now you can write §(a,b) everywhere in your code without unsuspecting people knowing what the deal is.
 
-You can also include varargs in macros, as in the following example, which is a solution to the age-old problem bothering the C macro language: conditional compilation of printf. The syntax for the vararg sequence is
+You can also include varargs in macros, as in the following example, which is a solution to the age-old problem bothering the C macro language: conditional compilation of printf.
 
-```
-##<from>..n
-```
+### Varargs Syntax
 
-where `<from>` specifies the first argument.
+**Format**: `##<start>..n` where `<start>` is a non-negative integer specifying the first argument to include.
+
+**Expansion**: Arguments are joined with `, ` (comma + space), no surrounding parentheses.
+
+**Examples**:
+- `##0..n` - All arguments starting from argument 0
+- `##1..n` - All arguments starting from argument 1  
+
+**Edge Cases**:
+- If `<start>` is beyond available arguments, expands to empty string
+- Single argument expands to that argument alone (no comma)
+- Empty arguments are preserved: `("a", "", "c")` → `a, , c`
 
 ```
 ##~(~DEBUG|~DEBUG)|~(~DEBUG|~DEBUG)
@@ -156,7 +165,9 @@ where `<from>` specifies the first argument.
 ##.
 ```
 
-In debug builds, you can use dbg just like normal printf(), in release builds they'll be omitted. To undefine a macro (or an operator, see below), use
+Usage: `dbg("format %s", value)` → `printf("format %s", value)` in debug builds, omitted in release builds.
+
+To undefine a macro (or an operator, see below), use
 
 ```
 ##-<name of macro or operator>
@@ -260,8 +271,7 @@ Alternatively, you can check out my other programming languages each of which pr
 
 ## Known Limitations
 
-The following features from the OPP specification are not yet implemented:
-- Varargs in function-like macros (`##0..n`)
+All major features from the OPP specification have been implemented.
 
 Note: Basic function-like macros with positional arguments (`#0`, `#1`, etc.) are supported, including stringize and charize operators.
 

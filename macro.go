@@ -19,12 +19,56 @@ func (p *Preprocessor) defineMacro(definition string) error {
 	name := definition[:spaceIdx]
 	body := definition[spaceIdx+1:]
 	
+	// Process ##,# escapes in the macro body
+	body = p.handleNestedMacroEscapes(body)
+	
 	p.macros[name] = &Macro{
 		Name:       name,
 		Definition: body,
 	}
 	
 	return nil
+}
+
+// handleNestedMacroEscapes processes ##,# escape sequences
+// ##,#0 → #0 (literal)
+// ##,## → ## (literal)
+func (p *Preprocessor) handleNestedMacroEscapes(line string) string {
+	result := ""
+	i := 0
+	
+	for i < len(line) {
+		// Check if we have ##,# sequence
+		if i+3 < len(line) && line[i:i+4] == "##,#" {
+			// Check what follows the ##,#
+			if i+4 < len(line) {
+				nextChar := line[i+4]
+				if nextChar == '#' {
+					// ##,## → ##
+					result += "##"
+					i += 5 // Skip ##,##
+				} else if nextChar >= '0' && nextChar <= '9' {
+					// ##,#0 → #0
+					result += "#" + string(nextChar)
+					i += 5 // Skip ##,#N
+				} else {
+					// ##,#x where x is not # or digit → #x
+					result += "#" + string(nextChar)
+					i += 5
+				}
+			} else {
+				// ##,# at end of line - don't process as escape
+				result += line[i:]
+				break
+			}
+		} else {
+			// Regular character
+			result += string(line[i])
+			i++
+		}
+	}
+	
+	return result
 }
 
 func (p *Preprocessor) expandMacros(line string) (string, error) {

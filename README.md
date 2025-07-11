@@ -180,15 +180,38 @@ The following macros are predefined
 
 ## Macros inside Macros
 
-In OPP, you can declare macros in other macros. To use macro arguments inside those other macros, use the escape sequence `##,` (yes, that comma is part of the seq) as in the following example. After the `##,`, a single ## command will be ignored.
+In OPP, you can declare macros in other macros. To pass macro arguments or directives literally to nested macro definitions, use the escape sequence `##,#` (a 4-character sequence). This outputs a literal `#` or `##` that won't be processed immediately.
+
+The escape works as follows:
+- `##,#0` → `#0` (literal, not expanded)
+- `##,##` → `##` (literal, not processed)  
+- `##,#1` → `#1` (literal, not expanded)
+
+### Example: Macro that Defines Macros
 
 ```
-##:foo ##:bar ##,#0->stop(##,#"##,#1..n)
-foo(thread)
-bar(fu,ss)
+##:DEFINE_GETTER(name) ##:get_##,#0() { return ##,#0; }
+DEFINE_GETTER(width)
+DEFINE_GETTER(height)
 ```
 
-More reasonable examples are possible, but I couldn't think of any.
+This expands to:
+```
+##:get_width() { return width; }
+##:get_height() { return height; }
+```
+
+Which then defines two new macros `get_width` and `get_height`.
+
+### Example: Macro with Nested Argument Forwarding
+
+```
+##:WRAPPER(fn) ##:safe_##,#0(x) { if (x != NULL) ##,#0(x); }
+WRAPPER(free)
+WRAPPER(close)
+```
+
+Expands to macros that safely call functions only if the argument is non-NULL.
 
 ## Preprocessor operators
 
@@ -221,7 +244,6 @@ Alternatively, you can check out my other programming languages each of which pr
 
 The following features from the OPP specification are not yet implemented:
 - Function-like macros with arguments (`#0`, `#1`, `##0..n`)
-- Nested macro expansion (`##,` escape sequence)
 - Stringize (`#"`) and charize (`#'`) operators
 - Undefine directive (`##-`)
 

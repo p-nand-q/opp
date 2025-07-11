@@ -215,10 +215,30 @@ Expands to macros that safely call functions only if the argument is non-NULL.
 
 In macro or operator definitions, macro arguments are specified by #, followed by a zero-based index. You can use the following macro argument operators.
 
-- `#"` - stringize operand. Do not confuse with ##"
-- `#'` - charize operand. Do confuse with ##'
+### Stringize Operator (`#"`)
+- **Syntax**: `#"#n` where `n` is the argument number (0-based)
+- **Effect**: Wraps the expanded argument in double quotes
+- **No space allowed** between `#"` and `#n`
 
-Each of these applies to the next argument expanded, and ONLY to the next argument expanded. You can specify them anywhere in a macro definition.
+### Charize Operator (`#'`) 
+- **Syntax**: `#'#n` where `n` is the argument number (0-based)
+- **Effect**: Wraps the expanded argument in single quotes
+- **No space allowed** between `#'` and `#n`
+
+#### Examples
+
+```
+##:STR(x) #"#0
+STR(hello) → "hello"
+STR(test"quote) → "test\"quote"
+
+##:CHR(x) #'#0
+CHR(a) → 'a'
+CHR(it's) → 'it\'s'
+
+##:LOG(func,msg) printf("%s: %s\n", #"#0, #"#1)
+LOG(main, Starting program) → printf("%s: %s\n", "main", "Starting program")
+```
 
 ## Working with Lines
 
@@ -241,8 +261,9 @@ Alternatively, you can check out my other programming languages each of which pr
 ## Known Limitations
 
 The following features from the OPP specification are not yet implemented:
-- Function-like macros with arguments (`#0`, `#1`, `##0..n`)
-- Stringize (`#"`) and charize (`#'`) operators
+- Varargs in function-like macros (`##0..n`)
+
+Note: Basic function-like macros with positional arguments (`#0`, `#1`, etc.) are supported, including stringize and charize operators.
 
 See the issue tracker for progress on these features.
 

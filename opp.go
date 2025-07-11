@@ -20,9 +20,10 @@ type Preprocessor struct {
 
 // Macro represents a macro definition
 type Macro struct {
-	Name       string
-	Definition string
-	IsOperator bool
+	Name           string
+	Definition     string
+	IsOperator     bool
+	IsFunctionLike bool
 }
 
 // RandomGenerator provides pseudo-random numbers for ##$

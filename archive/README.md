@@ -11,6 +11,7 @@ This directory contains the original C++ implementation of OPP (Obfuscated Pre-P
   - `precomp.cpp`, `precomp.h` - Precompiled headers
   - `OPP.dsp`, `OPP.dsw` - Visual Studio project files
   - `OPP.exe` - Original Windows executable
+- `DIFFERENCES.md` - Detailed comparison between specification and original implementation
 
 ## Notes
 

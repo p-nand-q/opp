@@ -1,6 +1,11 @@
 # OPP - Obfuscated Pre-Processor
 
-This page describes OPP, a free open-source preprocessor that you can add to all languages you want to use it in. It is used in the new editions of my languages Sorted!, Smith#, and Java2K.
+
+This page describes OPP, a free (*) open-source preprocessor that you can add to all languages you want to use it in. It is used in the new editions of my languages Sorted!, Smith#, and Java2K.
+
+**This is what you have been waiting for**: OPP makes simple things finally, delightfully complicated. Simplicity is for beginners, show that you're the expert by migrating your 2m LOC business app to the only preprocessor that is operating-system-neutral: OPP
+
+(*) as in: Apache 2.0 licensed.
 
 ## Quick Start
 
@@ -95,12 +100,6 @@ OBJECT = VARIABLE | '(' SYNTAX ')'.
 
 Variables can be specified either as environment variables or explicitly as macros (see below).
 
-**Implementation Note**: The original C++ implementation has several bugs and differences:
-- Uses `.` as separator instead of `|` (so `##~a.~b` instead of `##~a|~b`)
-- Implements AND logic instead of NAND due to a bug
-- Only checks environment variables, not defined macros in conditionals
-- Our implementation follows the specification as documented
-
 ## Includes
 
 You can use OPP to include other sourcefiles in your code, by using the following statement
@@ -111,7 +110,9 @@ You can use OPP to include other sourcefiles in your code, by using the followin
 
 **Important**: The `.` at the end is mandatory - it terminates the filename. This resolves the ambiguity between file inclusion (`##<filename.`) and other directives that might start with `##<`.
 
-Because filenames with dots are frequent, you can use the escape sequence `\.` to specify a single dot. Because filenames with `\` are frequent on certain OSs (OSsi?) you can use `..` to specify a single `\`. Because filenames with `..` are frequent on certain OSs, you can use `\\` to specify a single `..`. Because filenames with `\\` are not so frequent on the OS in question, but still possible, you can use `//` to specify a single `\\`, and if your code editor has syntax coloring, you get the rest of the line in comment color, without paying extra. Here is a sample filename in C (on Windows NT) and its equivalent on OPP. Judge for yourself which is more phon - er - fun.
+Because filenames with dots are frequent, you can use the escape sequence `\.` to specify a single dot. Because filenames with `\` are frequent on certain OSs (OSsi?) you can use `..` to specify a single `\`. Because filenames with `..` are frequent on certain OSs, you can use `\\` to specify a single `..`. Because filenames with `\\` are not so frequent on the OS in question, but still possible, you can use `//` to specify a single `\\`, and if your code editor has syntax coloring, you get the rest of the line in comment color, without paying extra. 
+
+This escape system is so intuitive that even your grandmother's cat could understand it! Here is a sample filename in C (on Windows NT) and its equivalent on OPP. Judge for yourself which is more phon - er - fun.
 
 ```c
 #include "\\server\users\opp\sample.h"
@@ -120,9 +121,7 @@ Because filenames with dots are frequent, you can use the escape sequence `\.` t
 ##<//server..users..opp..sample\.h.
 ```
 
-Of course, you must specify absolute paths, because OPP does not support proprietary environment variables such as "INCLUDE" or "PATH".
-
-**Implementation Note**: The original adds a newline before included content.
+Of course, you must specify absolute paths, because OPP does not support proprietary environment variables such as "INCLUDE" or "PATH". Who needs convenience when you can have purity?
 
 ## Defining Macros
 
@@ -132,15 +131,15 @@ OPP supports defining function macros, by utilizing the following syntax.
 ##:<name of macro, followed by a single blank> <macro definition>
 ```
 
-Everything after the single blank is treated as part of the macro body. Macro arguments are implicitly defined by using #0 to refer to the first argument, #1 to the second and so on. Macronames can be virtually anything, including esoteric characters like ? or ä. Here is a macro, that evaluates the max of two arguments as a function "§".
+Everything after the single blank is treated as part of the macro body. Macro arguments are implicitly defined by using #0 to refer to the first argument, #1 to the second and so on. Macronames can be virtually anything, including esoteric characters like ? or ä. Here is a macro that evaluates the max of two arguments as a function "§":
 
 ```
 ##:§ ((#0<#1)?#1:#0)
 ```
 
-Now you can write §(a,b) everywhere in your code without unsuspecting people knowing what the deal is.
+Now you can write §(a,b) everywhere in your code without unsuspecting people knowing what the deal is. Your code reviews will be *delightful*!
 
-You can also include varargs in macros, as in the following example, which is a solution to the age-old problem bothering the C macro language: conditional compilation of printf.
+You can also include varargs in macros, as in the following example, which is a solution to the age-old problem bothering the C macro language: conditional compilation of printf. Finally, someone solved a problem that nobody knew they had!
 
 ### Varargs Syntax
 
@@ -183,9 +182,6 @@ The following macros are predefined
 - `##{` - The number of { in the code up to this point
 - `##}` - The number of } in the code up to this point, modulo 5
 
-**Implementation Notes**:
-- The original returns `complex(0,1)` for `##i` instead of `1i`
-- The original has a bug where both `{` and `}` increment the open brace counter
 
 ## Macros inside Macros
 
@@ -253,7 +249,7 @@ LOG(main, Starting program) → printf("%s: %s\n", "main", "Starting program")
 
 ## Working with Lines
 
-You cannot span macros across multiple lines. Use tense code!
+You cannot span macros across multiple lines. Use tense code! Who needs readability when you can have maximum density? Your colleagues will thank you for the mental gymnastics.
 
 ## Using OPP in your own programs
 
@@ -267,15 +263,13 @@ preprocessor.Define("DEBUG", "1")
 output, err := preprocessor.Process(input)
 ```
 
-Alternatively, you can check out my other programming languages each of which prominently features OPP.
+Alternatively, you can check out my other programming languages, each of which prominently features OPP. Because if you're going to make code unreadable, why stop at just the preprocessor?
 
 ## Known Limitations
 
-All major features from the OPP specification have been implemented.
+All major features from the OPP specification have been implemented. We've successfully made preprocessors more confusing than they ever needed to be!
 
-Note: Basic function-like macros with positional arguments (`#0`, `#1`, etc.) are supported, including stringize and charize operators.
-
-See the issue tracker for progress on these features.
+If you find any bugs, that's not a bug - that's a feature. OPP specializes in turning simple concepts into baroque masterpieces of confusion.
 
 ## Example Files
 
@@ -296,3 +290,34 @@ A comprehensive C example showcasing all OPP features:
 - Include directives
 
 These examples demonstrate how OPP can obfuscate any language while technically remaining a functional preprocessor.
+
+## Why OPP?
+
+Great question! Here are some compelling reasons to use OPP:
+
+- ✅ **Job Security**: Your code will be so unreadable that only you can maintain it
+- ✅ **Mental Exercise**: Keeps your brain sharp with constant puzzle-solving
+- ✅ **Conversation Starter**: "Wait, what does `##~(~DEBUG|~DEBUG)|~(~DEBUG|~DEBUG)` do again?"
+- ✅ **Retroactive Credibility**: You were doing obfuscated preprocessors before it was cool
+- ✅ **Cost Effective**: Cheaper than cars, more frustrating than assembly language
+
+## Philosophy
+
+OPP follows the time-honored tradition of making simple things needlessly complex. Why use `#ifdef DEBUG` when you can use `##~(~DEBUG|~DEBUG)|~(~DEBUG|~DEBUG)`? Why include files normally when you can escape paths like a madman? 
+
+We believe that if your preprocessor directives don't require a PhD in computer science to understand, you're not trying hard enough.
+
+## Claude Code as a Co-Author of all this
+
+Have you ever wondered: How do I make this code more readable?
+
+Then please go someplace else.
+
+OPP was written with a firm commitment to world peace and my 200€ Claude Max subscription; *to make the world a better place*, and to improve my "brand" here at p-nand-q.com Technologies.
+
+Let's face it: don't you as a programmer question yourself in this day and age, where AI promises to fire you and all your loved ones? People say the most common use of AI is therapy - little do they know how wrong they are: PROGRAMMING is therapy, AI is just help you get fully therapized, more quickly and thoroughly. With OPP I think I found the holy grail: OPP helps you write code that is too sloppy even for AI to grok (no pun intended).
+
+---
+
+*OPP: Making the simple complex since the early days of the internet.*
+

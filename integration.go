@@ -2,12 +2,11 @@ package opp
 
 import (
 	"io"
-	"io/ioutil"
 )
 
 // ProcessReader processes input from an io.Reader
 func (p *Preprocessor) ProcessReader(r io.Reader) (string, error) {
-	input, err := ioutil.ReadAll(r)
+	input, err := io.ReadAll(r)
 	if err != nil {
 		return "", err
 	}

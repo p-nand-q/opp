@@ -2,7 +2,7 @@ package opp
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -20,12 +20,12 @@ func (p *Preprocessor) processInclude(directive string) (string, error) {
 	filename = unescapeFilename(filename)
 	
 	// Read the file
-	content, err := ioutil.ReadFile(filename)
+	content, err := os.ReadFile(filename)
 	if err != nil {
 		// Try relative to current file if we have that context
 		if p.currentFile != "" {
 			relPath := filepath.Join(filepath.Dir(p.currentFile), filename)
-			content, err = ioutil.ReadFile(relPath)
+			content, err = os.ReadFile(relPath)
 		}
 		if err != nil {
 			return "", fmt.Errorf("cannot read file %s: %w", filename, err)

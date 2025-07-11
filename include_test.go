@@ -1,7 +1,6 @@
 package opp
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -9,7 +8,7 @@ import (
 
 func TestFileInclusion(t *testing.T) {
 	// Create a temporary directory for test files
-	tempDir, err := ioutil.TempDir("", "opp-test-*")
+	tempDir, err := os.MkdirTemp("", "opp-test-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -20,7 +19,7 @@ func TestFileInclusion(t *testing.T) {
 	headerContent := `#define HEADER_INCLUDED
 const char* version = "1.0";`
 	
-	if err := ioutil.WriteFile(headerFile, []byte(headerContent), 0644); err != nil {
+	if err := os.WriteFile(headerFile, []byte(headerContent), 0644); err != nil {
 		t.Fatalf("Failed to write header file: %v", err)
 	}
 	
@@ -30,7 +29,7 @@ int main() {
     return 0;
 }`
 	
-	if err := ioutil.WriteFile(mainFile, []byte(mainContent), 0644); err != nil {
+	if err := os.WriteFile(mainFile, []byte(mainContent), 0644); err != nil {
 		t.Fatalf("Failed to write main file: %v", err)
 	}
 	
@@ -130,7 +129,7 @@ func TestFileInclusionErrors(t *testing.T) {
 
 func TestNestedInclusion(t *testing.T) {
 	// Create a temporary directory
-	tempDir, err := ioutil.TempDir("", "opp-nested-*")
+	tempDir, err := os.MkdirTemp("", "opp-nested-*")
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
@@ -139,14 +138,14 @@ func TestNestedInclusion(t *testing.T) {
 	// Create nested include files
 	deepFile := filepath.Join(tempDir, "deep.h")
 	deepContent := `#define DEEP_INCLUDED`
-	if err := ioutil.WriteFile(deepFile, []byte(deepContent), 0644); err != nil {
+	if err := os.WriteFile(deepFile, []byte(deepContent), 0644); err != nil {
 		t.Fatalf("Failed to write deep file: %v", err)
 	}
 	
 	middleFile := filepath.Join(tempDir, "middle.h")
 	middleContent := `#define MIDDLE_INCLUDED
 ##<deep\.h.`
-	if err := ioutil.WriteFile(middleFile, []byte(middleContent), 0644); err != nil {
+	if err := os.WriteFile(middleFile, []byte(middleContent), 0644); err != nil {
 		t.Fatalf("Failed to write middle file: %v", err)
 	}
 	

@@ -3,7 +3,7 @@ package opp
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -100,7 +100,7 @@ func (p *Preprocessor) Process(input string) (string, error) {
 
 // ProcessFile processes a file
 func (p *Preprocessor) ProcessFile(filename string) (string, error) {
-	content, err := ioutil.ReadFile(filename)
+	content, err := os.ReadFile(filename)
 	if err != nil {
 		return "", fmt.Errorf("cannot read file %s: %w", filename, err)
 	}

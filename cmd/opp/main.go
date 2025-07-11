@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -28,7 +27,7 @@ func main() {
 	inputFile := flag.Arg(0)
 	
 	// Read input file
-	input, err := ioutil.ReadFile(inputFile)
+	input, err := os.ReadFile(inputFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading file: %v\n", err)
 		os.Exit(1)
@@ -56,7 +55,7 @@ func main() {
 	
 	// Write output
 	if *output != "" {
-		err = ioutil.WriteFile(*output, []byte(result), 0644)
+		err = os.WriteFile(*output, []byte(result), 0644)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error writing output: %v\n", err)
 			os.Exit(1)

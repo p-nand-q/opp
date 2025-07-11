@@ -1,0 +1,19 @@
+JUSTIF WITH OPP PREPROCESSING
+
+##:PRINT_INT !#0
+##:PRINT_CHAR >#0
+
+~1?
+    ##~(~VERBOSE|~VERBOSE)|~(~VERBOSE|~VERBOSE)
+    THIS IS VERBOSE MODE WITH LINE ##_
+    ##.
+    .0=0,
+    .1="Hello, OPP!",
+    =2:
+~2?
+    .1!.0?
+        PRINT_CHAR(.1!.0),
+        .0+1,
+        =2:
+    0:
+0

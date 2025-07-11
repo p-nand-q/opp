@@ -2,18 +2,46 @@
 
 This page describes OPP, a free open-source preprocessor that you can add to all languages you want to use it in. It is used in the new editions of my languages Sorted!, Smith#, and Java2K.
 
-## Go Implementation
+## Quick Start
 
-This is a Go implementation of OPP. Build with:
+### Installation
 
 ```bash
-go build -o bin/opp ./cmd/opp
+go install github.com/p-nand-q/opp/cmd/opp@latest
 ```
 
-Run with:
+### Basic Usage
 
 ```bash
-./bin/opp input.opp -o output.go
+# Process a file
+opp input.opp -o output.go
+
+# Define variables from command line
+opp -D DEBUG=1 -D VERSION=2 input.opp
+
+# Output to stdout
+opp input.opp
+```
+
+### Example
+
+```go
+##~DEBUG|~DEBUG
+// This line only appears if DEBUG is undefined
+##.
+##~(~DEBUG|~DEBUG)|~(~DEBUG|~DEBUG)
+// This line only appears if DEBUG is defined
+##.
+```
+
+## Go Implementation
+
+This is a Go implementation of OPP. Build from source:
+
+```bash
+git clone https://github.com/p-nand-q/opp
+cd opp
+go build -o opp ./cmd/opp
 ```
 
 ## Conditional Compilation
@@ -187,19 +215,16 @@ output, err := preprocessor.Process(input)
 
 Alternatively, you can check out my other programming languages each of which prominently features OPP.
 
-## Compatibility Mode
+## Known Limitations
 
-Due to differences between the specification and the original C++ implementation, this Go version offers a compatibility mode:
+The following features from the OPP specification are not yet implemented:
+- File inclusion (`##<filename>`)
+- Function-like macros with arguments (`#0`, `#1`, `##0..n`)
+- Nested macro expansion (`##,` escape sequence)
+- Stringize (`#"`) and charize (`#'`) operators
+- Undefine directive (`##-`)
 
-```go
-preprocessor := opp.NewWithCompat(opp.DefaultCompat())
-```
-
-This replicates most original behaviors including:
-- Using `.` as NAND separator instead of `|`
-- Environment variable checking only
-- Complex number format for `##i`
-- Various bugs (documented in DIFFERENCES.md)
+See the issue tracker for progress on these features.
 
 ## Example Files
 

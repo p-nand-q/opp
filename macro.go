@@ -57,16 +57,20 @@ func (p *Preprocessor) expandDynamicMacros(line string) string {
 		result = strings.ReplaceAll(result, "##$", strconv.Itoa(p.random.Next()))
 	}
 	
-	// ##{ - number of { braces seen so far (up to this point)
-	// Count braces before the ##{ token
-	if idx := strings.Index(result, "##{"); idx >= 0 {
-		bracesBeforeToken := 0
-		for i := 0; i < idx; i++ {
-			if result[i] == '{' {
-				bracesBeforeToken++
+	// ##{ - number of { braces seen so far (including in current line up to the token)
+	for strings.Contains(result, "##{") {
+		idx := strings.Index(result, "##{")
+		if idx >= 0 {
+			// Count braces in the current line up to this point
+			bracesInLine := 0
+			for i := 0; i < idx; i++ {
+				if result[i] == '{' {
+					bracesInLine++
+				}
 			}
+			// Replace just this occurrence
+			result = result[:idx] + strconv.Itoa(p.braceCount+bracesInLine) + result[idx+3:]
 		}
-		result = strings.ReplaceAll(result, "##{", strconv.Itoa(p.braceCount+bracesBeforeToken))
 	}
 	
 	// ##} - number of } braces modulo 5

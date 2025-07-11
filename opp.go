@@ -14,7 +14,6 @@ type Preprocessor struct {
 	lineNumber  int
 	braceCount  int
 	closeBraces int
-	compat      CompatMode
 }
 
 // Macro represents a macro definition
@@ -85,15 +84,8 @@ func (p *Preprocessor) Process(input string) (string, error) {
 			output.WriteString(processedLine)
 		}
 		
-		// Update brace counts after processing the line
-		for _, ch := range line {
-			switch ch {
-			case '{':
-				p.braceCount++
-			case '}':
-				p.closeBraces++
-			}
-		}
+		// Update brace counts after processing (for next line)
+		p.updateBraceCounts(line)
 	}
 	
 	if !conditionalStack.IsEmpty() {
@@ -117,9 +109,14 @@ func (p *Preprocessor) initPredefinedMacros() {
 }
 
 func (p *Preprocessor) updateBraceCounts(line string) {
-	// Count braces before processing the line
-	// This ensures ##{ reflects count at start of line
-	// Note: This is done after processing to match the behavior
+	for _, ch := range line {
+		switch ch {
+		case '{':
+			p.braceCount++
+		case '}':
+			p.closeBraces++
+		}
+	}
 }
 
 func (r *RandomGenerator) Next() int {

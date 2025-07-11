@@ -97,12 +97,7 @@ func (p *Preprocessor) processDirective(line string, stack *ConditionalStack) (s
 	case strings.HasPrefix(directive, "~"):
 		// Conditional compilation
 		var condition bool
-		var err error
-		if p.compat.UseDotSeparator {
-			condition, err = p.evaluateConditionCompat(directive)
-		} else {
-			condition, err = p.evaluateCondition(directive)
-		}
+		condition, err := p.evaluateCondition(directive)
 		if err != nil {
 			return "", err
 		}

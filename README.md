@@ -162,8 +162,6 @@ In debug builds, you can use dbg just like normal printf(), in release builds th
 ##-<name of macro or operator>
 ```
 
-**Implementation Note**: The original implementation doesn't actually implement the `-` (undefine) directive.
-
 ## Predefined macros
 
 The following macros are predefined
@@ -245,7 +243,6 @@ Alternatively, you can check out my other programming languages each of which pr
 The following features from the OPP specification are not yet implemented:
 - Function-like macros with arguments (`#0`, `#1`, `##0..n`)
 - Stringize (`#"`) and charize (`#'`) operators
-- Undefine directive (`##-`)
 
 See the issue tracker for progress on these features.
 

@@ -123,7 +123,7 @@ func (p *Preprocessor) processDirective(line string, stack *ConditionalStack) (s
 		if !stack.ShouldProcess() {
 			return "", nil
 		}
-		p.Undefine(directive[1:])
+		p.Undefine(strings.TrimSpace(directive[1:]))
 		return "", nil
 		
 	default:
@@ -194,7 +194,8 @@ func (p *Preprocessor) evaluateTerm(term string) (bool, error) {
 		return p.evaluateCondition(inner)
 	}
 	
-	// Check if variable is defined
-	_, defined := p.variables[term]
-	return defined, nil
+	// Check if variable or macro is defined
+	_, varDefined := p.variables[term]
+	_, macroDefined := p.macros[term]
+	return varDefined || macroDefined, nil
 }
